@@ -8,16 +8,13 @@ namespace Vrnz2.Infra.Data.Migrations
 {
     public static class ServiceExtensions
     {
-        public static IServiceCollection ConfigSqLiteMigrations(this IServiceCollection services, Assembly assembly, string databasePath, string databaseName)
+        public static IServiceCollection ConfigSqLiteMigrations(this IServiceCollection services, Assembly assembly, string connectionString)
         {
-            if (!Directory.Exists(databasePath))
-                Directory.CreateDirectory(databasePath);
-
             services
                 .AddFluentMigratorCore()
                     .ConfigureRunner(rb => rb
                     .AddSQLite()
-                    .WithGlobalConnectionString($"Data Source={Path.Combine(databasePath, databaseName)}")
+                    .WithGlobalConnectionString(connectionString)
                     .ScanIn(assembly).For.Migrations())
                 .AddLogging(lb => lb.AddFluentMigratorConsole());
 
