@@ -24,6 +24,22 @@ namespace Vrnz2.Infra.Data.Migrations
             return services;
         }
 
+        public static IServiceCollection ConfigPostgresMigrations(this IServiceCollection services, Assembly assembly, string connectionString)
+        {
+            services
+                .AddFluentMigratorCore()
+                    .ConfigureRunner(rb => rb
+                    .AddPostgres()
+                    .WithGlobalConnectionString(connectionString)
+                    .ScanIn(assembly).For.Migrations())
+                .AddLogging(lb => lb.AddFluentMigratorConsole());
+
+            using (var scope = services.BuildServiceProvider().CreateScope())
+                UpdateDatabase(scope.ServiceProvider);
+
+            return services;
+        }
+
         private static void UpdateDatabase(IServiceProvider serviceProvider)
             => serviceProvider.GetRequiredService<IMigrationRunner>().MigrateUp();
     }
