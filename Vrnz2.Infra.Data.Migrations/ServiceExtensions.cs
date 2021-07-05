@@ -1,7 +1,7 @@
 ﻿using FluentMigrator.Runner;
 using Microsoft.Extensions.DependencyInjection;
+using Npgsql;
 using System;
-using System.IO;
 using System.Reflection;
 
 namespace Vrnz2.Infra.Data.Migrations
@@ -42,5 +42,62 @@ namespace Vrnz2.Infra.Data.Migrations
 
         private static void UpdateDatabase(IServiceProvider serviceProvider)
             => serviceProvider.GetRequiredService<IMigrationRunner>().MigrateUp();
+
+        public static IServiceCollection CreatePostgresDatabase(this IServiceCollection services, string databaseName, string ownerConnectionString)
+        {
+            using (NpgsqlConnection conn = new NpgsqlConnection(ownerConnectionString))
+            {
+                conn.Open();
+
+                if (!DbExists(databaseName, conn))
+                    Create(databaseName, conn);
+
+                conn.Close();
+            }
+
+            return services;
+        }
+
+        private static bool Create(string dbname, NpgsqlConnection conn)
+        {
+            string sql = $"CREATE DATABASE {dbname} WITH OWNER = postgres ENCODING = 'UTF8' CONNECTION LIMIT = -1;";
+
+            using (NpgsqlCommand command = new NpgsqlCommand(sql, conn))
+            {
+                try
+                {
+                    var result = command.ExecuteScalar();
+
+                    return (result != null && result.ToString().Equals(dbname));
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.ToString());
+
+                    throw;
+                }
+            }
+        }
+
+        private static bool DbExists(string dbname, NpgsqlConnection conn)
+        {
+            string sql = $"SELECT DATNAME FROM pg_catalog.pg_database WHERE DATNAME = '{dbname}'";
+
+            using (NpgsqlCommand command = new NpgsqlCommand(sql, conn))
+            {
+                try
+                {
+                    var result = command.ExecuteScalar();
+
+                    return (result != null && result.ToString().Equals(dbname));
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.ToString());
+
+                    throw;
+                }
+            }
+        }
     }
 }
