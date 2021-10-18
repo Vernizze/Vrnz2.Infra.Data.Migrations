@@ -1,8 +1,8 @@
 ﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.IO;
-using System.Threading.Tasks;
 using Vrnz2.Infra.CrossCutting.Extensions;
 using Vrnz2.Infra.CrossCutting.Utils;
 using Vrnz2.Infra.Data.Migrations.Seeding.Data.DTO;
@@ -30,54 +30,78 @@ namespace Vrnz2.Infra.Data.Migrations.Seeding.MongoDB
 
         #region Methods
 
-        public Task Run(string connectionString, string database)
+        public void Run(string connectionString, string database)
         {
-            var path = Path.Combine(FilesAndFolders.AppPath(), "migrations", "mongodb", "seeding");
+            var path = Path.Combine(FilesAndFolders.AppPath(), "seedings", "mongodb", "seeds");
 
             if (Directory.Exists(path))
             {
+                var inserted = true;
+
                 _unitOfWork.OpenConnection();
 
-                var repository = _unitOfWork.GetRepository<ISeedingRepository>(nameof(Entity.Seeding));
+                _unitOfWork.Begin();
 
-                Directory.GetFiles(path, "*.json").SForEach(async m =>
+                var repository = _unitOfWork.GetRepository<ISeedsRepository>(nameof(Entity.Seed));
+
+                try
                 {
-                    var seeds = JsonConvert.DeserializeObject<SeedingsFileContent>(FilesAndFolders.GetFileContent(m));
-
-                    if (!(await repository.SeedingDoneAsync(Path.GetFileName(m).Replace(".json", string.Empty))))
+                    Directory.GetFiles(path, "*.json").SForEach(m =>
                     {
-                        seeds.Seeds.SForEach(async seed => 
+                        var seeds = JsonConvert.DeserializeObject<SeedingsFileContent>(FilesAndFolders.GetFileContent(m));
+
+                        var seedingNumber = Path.GetFileName(m).Replace(".json", string.Empty);
+
+                        if (!(repository.SeedingDoneAsync(seedingNumber).GetAwaiter().GetResult()))
                         {
-                            using (var mongo = new Mongo(connectionString, seed.CollectionName, database))
+                            seeds.Seeds.SForEach(seed =>
                             {
-                                //string json = @"{""key1"":""value1"",""key2"":""value2""}";
+                                using (var mongo = new Mongo(connectionString, seed.CollectionName, database))
+                                {
+                                    seed.Values.SForEach(i =>
+                                    {
+                                        dynamic expando = new ExpandoObject();
 
-                                var values = JsonConvert.DeserializeObject<Dictionary<string, string>>(seed.Values);
+                                        AddProperty(expando, i.Values);
 
-                                dynamic expando = new ExpandoObject();
+                                        mongo.Add(expando).GetAwaiter().GetResult();
+                                    });
+                                }
+                            });
 
-                                values.SForEach(i => AddProperty(expando, i.Key, i.Value));
+                            inserted = inserted && repository.Insert(new Entity.Seed { Id = Guid.NewGuid().ToString(), CreationDateTime = DateTime.UtcNow, Number = seedingNumber });
+                        }
+                    });
+                }
+                catch (Exception ex)
+                {
+                    _unitOfWork.Rollback();
+                    _unitOfWork.Dispose();
 
-                                await mongo.Add(expando);
-                            }
-                        });                        
-                    }
-                });
+                    throw;
+                }
+
+                if (inserted)
+                    _unitOfWork.Commit();
+                else
+                    _unitOfWork.Rollback();
 
                 _unitOfWork.Dispose();
             }
-
-            return Task.CompletedTask;
         }
 
-        public void AddProperty(ExpandoObject expando, string propertyName, object propertyValue)
+        public ExpandoObject AddProperty(ExpandoObject expando, List<SeedValue> values)
         {
-            // ExpandoObject da suporte a IDictionary então podemos estendê-lo assim:
-            var expandoDict = expando as IDictionary<string, object>;
-            if (expandoDict.ContainsKey(propertyName))
-                expandoDict[propertyName] = propertyValue;
-            else
-                expandoDict.Add(propertyName, propertyValue);
+            values.SForEach(v => 
+            {
+                var expandoDict = expando as IDictionary<string, object>;
+                if (expandoDict.ContainsKey(v.PropertyName))
+                    expandoDict[v.PropertyName] = v.Value;
+                else
+                    expandoDict.Add(v.PropertyName, v.Value);
+            });
+
+            return expando;
         }
 
         #endregion

@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.30804.86
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vrnz2.Infra.Data.Migrations", "Vrnz2.Infra.Data.Migrations\Vrnz2.Infra.Data.Migrations.csproj", "{1C6C45B0-0AC4-4BEB-B603-F652F8D7291A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vrnz2.Infra.Data.Migrations.Test", "Vrnz2.Infra.Data.Migrations.Test\Vrnz2.Infra.Data.Migrations.Test.csproj", "{074E3BC1-3CA6-417E-BCEC-DE74FC5531E0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Vrnz2.Infra.Data.Migrations.Example", "Vrnz2.Infra.Data.Migrations.Example\Vrnz2.Infra.Data.Migrations.Example.csproj", "{BB9A907E-7579-479C-964D-A017D199EA17}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,10 @@ Global
 		{1C6C45B0-0AC4-4BEB-B603-F652F8D7291A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1C6C45B0-0AC4-4BEB-B603-F652F8D7291A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1C6C45B0-0AC4-4BEB-B603-F652F8D7291A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{074E3BC1-3CA6-417E-BCEC-DE74FC5531E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{074E3BC1-3CA6-417E-BCEC-DE74FC5531E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{074E3BC1-3CA6-417E-BCEC-DE74FC5531E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{074E3BC1-3CA6-417E-BCEC-DE74FC5531E0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BB9A907E-7579-479C-964D-A017D199EA17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB9A907E-7579-479C-964D-A017D199EA17}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB9A907E-7579-479C-964D-A017D199EA17}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB9A907E-7579-479C-964D-A017D199EA17}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

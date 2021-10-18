@@ -4,10 +4,10 @@ using Entity = Vrnz2.Infra.Data.Migrations.Seeding.Data.Entities;
 
 namespace Vrnz2.Infra.Data.Migrations.Seeding.Data.Repositories
 {
-    public interface ISeedingRepository
+    public interface ISeedsRepository
         : IBaseRepository
     {
         Task<bool> SeedingDoneAsync(string seedingNumber);
-        Task<bool> InsertAsync(Entity.Seeding value);        
+        bool Insert(Entity.Seed value);
     }
 }

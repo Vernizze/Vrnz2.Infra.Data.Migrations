@@ -1,0 +1,26 @@
+{
+  "Number": 1,
+  "Seeds": [
+    {
+      "CollectionName": "TesteCollection",
+      "Values": [
+        {
+          "Values": [
+            {
+              "PropertyName": "PrimeiroNome",
+              "Value": "José"
+            },
+            {
+              "PropertyName": "SegundoNome",
+              "Value": ""
+            },
+            {
+              "PropertyName": "Sobrenome",
+              "Value": "de Oliveira"
+            }
+          ]
+        }        
+      ]
+    }
+  ]
+}
