@@ -3,6 +3,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
 using System;
 using System.Reflection;
+using System.Threading.Tasks;
+using Vrnz2.Infra.Data.Migrations.Seeding.Data;
+using Vrnz2.Infra.Data.Migrations.Seeding.MongoDB;
 
 namespace Vrnz2.Infra.Data.Migrations
 {
@@ -98,6 +101,20 @@ namespace Vrnz2.Infra.Data.Migrations
                     throw;
                 }
             }
+        }
+
+        public static IServiceCollection AddSeeding(this IServiceCollection services, string connectionString, string database)
+        {
+            //Task.Run(() => 
+            //{
+
+            //});
+
+            var seeding = new RunSeeding(new UnitOfWork());
+
+            seeding.Run(connectionString, database);
+
+            return services;
         }
     }
 }

@@ -1,0 +1,9 @@
+{
+  "Number": 1,
+  "Seeds": [
+    {
+      "CollectionName": "TesteCollection",
+      "Values": "{\"Nome\":\"Carlos\",\"Sobrenome\":\"Vernizze\"}"
+    }
+  ]
+}
